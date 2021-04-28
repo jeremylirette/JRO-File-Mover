@@ -25,6 +25,7 @@ namespace ReportRenamer
         private void Form1_Load(object sender, EventArgs e)
         {
             MessageBox.Show("Please ensure Reports,NC Files, and all Drawings are created before running.", "", MessageBoxButtons.OK);
+            errorProvider1.SetError(txtSaddleClips, "Cannot be empty, must be numeric. Set to 0 if none are required.");
         }
 
         private void BtnRename_Click(object sender, EventArgs e)
@@ -447,6 +448,18 @@ namespace ReportRenamer
             catch(Exception ex)
             {
                 MessageBox.Show(ex.Message);
+            }
+        }
+
+        private void txtSaddleClips_Validating(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if(int.TryParse(txtSaddleClips.Text, out int clips) && clips >= 0)
+            {
+                errorProvider1.SetError(txtSaddleClips, string.Empty);
+            }
+            else
+            {
+                errorProvider1.SetError(txtSaddleClips, "Cannot be empty, must be numeric, cannot be negative. Set to 0 if none are required.");
             }
         }
     }

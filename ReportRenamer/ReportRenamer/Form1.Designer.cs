@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.btnRename = new System.Windows.Forms.Button();
             this.txtJobNum = new System.Windows.Forms.TextBox();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
@@ -41,6 +42,10 @@
             this.lblRevision = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.lblRevisionEx = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
+            this.txtSaddleClips = new System.Windows.Forms.TextBox();
+            this.errorProvider1 = new System.Windows.Forms.ErrorProvider(this.components);
+            ((System.ComponentModel.ISupportInitialize)(this.errorProvider1)).BeginInit();
             this.SuspendLayout();
             // 
             // btnRename
@@ -142,11 +147,34 @@
             this.lblRevisionEx.TabIndex = 11;
             this.lblRevisionEx.Text = "Just the number, no letter";
             // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(58, 93);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(141, 13);
+            this.label5.TabIndex = 12;
+            this.label5.Text = "Extra Saddle Clips Required:";
+            // 
+            // txtSaddleClips
+            // 
+            this.txtSaddleClips.Location = new System.Drawing.Point(205, 90);
+            this.txtSaddleClips.Name = "txtSaddleClips";
+            this.txtSaddleClips.Size = new System.Drawing.Size(100, 20);
+            this.txtSaddleClips.TabIndex = 13;
+            this.txtSaddleClips.Validating += new System.ComponentModel.CancelEventHandler(this.txtSaddleClips_Validating);
+            // 
+            // errorProvider1
+            // 
+            this.errorProvider1.ContainerControl = this;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(527, 173);
+            this.Controls.Add(this.txtSaddleClips);
+            this.Controls.Add(this.label5);
             this.Controls.Add(this.lblRevisionEx);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.lblRevision);
@@ -162,6 +190,7 @@
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "3";
             this.Load += new System.EventHandler(this.Form1_Load);
+            ((System.ComponentModel.ISupportInitialize)(this.errorProvider1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -182,6 +211,9 @@
         private System.Windows.Forms.Label lblRevision;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label lblRevisionEx;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.TextBox txtSaddleClips;
+        private System.Windows.Forms.ErrorProvider errorProvider1;
     }
 }
 
