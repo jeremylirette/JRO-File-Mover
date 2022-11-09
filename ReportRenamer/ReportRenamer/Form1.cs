@@ -9,6 +9,7 @@ namespace ReportRenamer
     public partial class Form1 : Form
     {
         private string num = "";
+        private string structNum = "";
         private string destNum = "";
         private string rev = "";
         private string phase = "";
@@ -16,6 +17,7 @@ namespace ReportRenamer
         private string forFab = "";
         private string forFabRoot = "";
         private string forFabZip = "";
+        private string modelNum = "";
 
         public Form1()
         {
@@ -25,11 +27,15 @@ namespace ReportRenamer
         private void Form1_Load(object sender, EventArgs e)
         {
             MessageBox.Show("Please ensure Reports,NC Files, and all Drawings are created before running.", "", MessageBoxButtons.OK);
+            lblStruct.Hide();
+            lblStruct2.Hide();
+            txtStruct.Hide();
         }
 
         private void BtnRename_Click(object sender, EventArgs e)
         {
             num = txtJobNum.Text;
+            structNum = txtStruct.Text;
             if (num.Contains("SJ"))
             {
                 destNum = "0" + num;
@@ -38,6 +44,16 @@ namespace ReportRenamer
             {
                 destNum = num;
             }
+
+            if (chbSplit.Checked)
+            {
+                modelNum = txtStruct.Text;
+            }
+            else
+            {
+                modelNum = num;
+            }
+
             phase = txtPhase.Text;
             rev = "R" + txtRevision.Text;
 
@@ -60,7 +76,7 @@ namespace ReportRenamer
                 path = "C:\\TeklaStructuresModels";
             }
             
-            IEnumerable<string> list = Directory.GetDirectories(path, num + "*", SearchOption.TopDirectoryOnly);
+            IEnumerable<string> list = Directory.GetDirectories(path, modelNum + "*", SearchOption.TopDirectoryOnly);
             IEnumerator<string> s = list.GetEnumerator();
             if (s.MoveNext())
             { 
@@ -109,11 +125,16 @@ namespace ReportRenamer
                 {
                     path = s.Current + "\\x-steel";
                 }
-                list = Directory.GetDirectories(path, num + "*", SearchOption.TopDirectoryOnly);
+                list = Directory.GetDirectories(path, modelNum + "*", SearchOption.TopDirectoryOnly);
                 s = list.GetEnumerator();
                 while (s.MoveNext())
                 {
                     NCFiles(s.Current);
+
+                    if (chbSplit.Checked)
+                    {
+                        SwitchJobNumber(s.Current);
+                    }
 
                     Reports(s.Current);
 
@@ -447,6 +468,48 @@ namespace ReportRenamer
             catch(Exception ex)
             {
                 MessageBox.Show(ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Find and replace Structural Job Number with Misc Job Number on Reports
+        /// </summary>
+        /// <param name="path"></param>
+        private void SwitchJobNumber(string path)
+        {
+            try
+            {
+                path += "\\Reports";
+                var files = Directory.EnumerateFiles(path, "*.xsr");
+                foreach (string file in files)
+                {
+                    int startIndex = file.LastIndexOf("\\") + 1;
+                    string f = file.Substring(startIndex, file.Length - startIndex);
+
+                    string fileText = File.ReadAllText(file);
+                    fileText = fileText.Replace(structNum, num);
+                    File.WriteAllText(file, fileText);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, ex.GetType().ToString());
+            }
+        }
+
+        private void chbSplit_CheckedChanged(object sender, EventArgs e)
+        {
+            if (chbSplit.Checked)
+            {
+                lblStruct.Show();
+                lblStruct2.Show();
+                txtStruct.Show();
+            }
+            else
+            {
+                lblStruct.Hide();
+                lblStruct2.Hide();
+                txtStruct.Hide();
             }
         }
     }

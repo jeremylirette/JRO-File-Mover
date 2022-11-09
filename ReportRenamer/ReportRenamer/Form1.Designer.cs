@@ -41,6 +41,10 @@
             this.lblRevision = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.lblRevisionEx = new System.Windows.Forms.Label();
+            this.lblStruct2 = new System.Windows.Forms.Label();
+            this.lblStruct = new System.Windows.Forms.Label();
+            this.txtStruct = new System.Windows.Forms.TextBox();
+            this.chbSplit = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // btnRename
@@ -142,11 +146,51 @@
             this.lblRevisionEx.TabIndex = 11;
             this.lblRevisionEx.Text = "Just the number, no letter";
             // 
+            // lblStruct2
+            // 
+            this.lblStruct2.AutoSize = true;
+            this.lblStruct2.Location = new System.Drawing.Point(392, 93);
+            this.lblStruct2.Name = "lblStruct2";
+            this.lblStruct2.Size = new System.Drawing.Size(57, 13);
+            this.lblStruct2.TabIndex = 14;
+            this.lblStruct2.Text = "ex: 20-704";
+            // 
+            // lblStruct
+            // 
+            this.lblStruct.AutoSize = true;
+            this.lblStruct.Location = new System.Drawing.Point(19, 93);
+            this.lblStruct.Name = "lblStruct";
+            this.lblStruct.Size = new System.Drawing.Size(98, 13);
+            this.lblStruct.TabIndex = 13;
+            this.lblStruct.Text = "Struct Job Number:";
+            // 
+            // txtStruct
+            // 
+            this.txtStruct.Location = new System.Drawing.Point(123, 90);
+            this.txtStruct.Name = "txtStruct";
+            this.txtStruct.Size = new System.Drawing.Size(266, 20);
+            this.txtStruct.TabIndex = 12;
+            // 
+            // chbSplit
+            // 
+            this.chbSplit.AutoSize = true;
+            this.chbSplit.Location = new System.Drawing.Point(395, 144);
+            this.chbSplit.Name = "chbSplit";
+            this.chbSplit.Size = new System.Drawing.Size(97, 17);
+            this.chbSplit.TabIndex = 15;
+            this.chbSplit.Text = "Split Numbers?";
+            this.chbSplit.UseVisualStyleBackColor = true;
+            this.chbSplit.CheckedChanged += new System.EventHandler(this.chbSplit_CheckedChanged);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(527, 173);
+            this.Controls.Add(this.chbSplit);
+            this.Controls.Add(this.lblStruct2);
+            this.Controls.Add(this.lblStruct);
+            this.Controls.Add(this.txtStruct);
             this.Controls.Add(this.lblRevisionEx);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.lblRevision);
@@ -182,6 +226,10 @@
         private System.Windows.Forms.Label lblRevision;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label lblRevisionEx;
+        private System.Windows.Forms.Label lblStruct2;
+        private System.Windows.Forms.Label lblStruct;
+        private System.Windows.Forms.TextBox txtStruct;
+        private System.Windows.Forms.CheckBox chbSplit;
     }
 }
 
