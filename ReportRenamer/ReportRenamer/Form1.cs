@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Windows.Forms;
+using System.Xml;
 
 namespace ReportRenamer
 {
@@ -18,18 +19,26 @@ namespace ReportRenamer
         private string forFabRoot = "";
         private string forFabZip = "";
         private string modelNum = "";
+        private string powerfabDrawings = "";
+        private bool fabtrol = false;
 
         public Form1()
         {
             InitializeComponent();
         }
 
+        /// <summary>
+        /// Display splash message, hide uneeded controls, check Powerfab radio button.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Form1_Load(object sender, EventArgs e)
         {
             MessageBox.Show("Please ensure Reports,NC Files, and all Drawings are created before running.", "", MessageBoxButtons.OK);
             lblStruct.Hide();
             lblStruct2.Hide();
             txtStruct.Hide();
+            rdoPowerfab.Checked = true;
         }
 
         private void BtnRename_Click(object sender, EventArgs e)
@@ -75,11 +84,11 @@ namespace ReportRenamer
             {
                 path = "C:\\TeklaStructuresModels";
             }
-            
+
             IEnumerable<string> list = Directory.GetDirectories(path, modelNum + "*", SearchOption.TopDirectoryOnly);
             IEnumerator<string> s = list.GetEnumerator();
             if (s.MoveNext())
-            { 
+            {
                 if (chbShared.Checked)
                 {
                     IEnumerable<string> l = Directory.GetDirectories("\\\\JRO-SERVER\\Jobs\\", destNum + "*", SearchOption.TopDirectoryOnly);
@@ -91,11 +100,13 @@ namespace ReportRenamer
                         {
                             forFabZip = s2.Current + "\\to Send\\For Fabrication\\" + num + "_" + DateTime.Now.ToString("MMM dd") + " " + phase + "#" + iss;
                             forFab = s2.Current + "\\to Send\\For Fabrication\\" + num + "_" + DateTime.Now.ToString("MMM dd") + " " + phase + "#" + iss + "\\" + rev;
+                            powerfabDrawings = s2.Current + "\\to Send\\For Fabrication\\Drawings For Records" + num + " " + phase + "#" + iss;
                         }
-                        else                       
+                        else
                         {
                             forFabZip = s2.Current + "\\to Send\\For Fabrication\\" + num + "_" + DateTime.Now.ToString("MMM dd") + " " + phase;
                             forFab = s2.Current + "\\to Send\\For Fabrication\\" + num + "_" + DateTime.Now.ToString("MMM dd") + " " + phase + "\\" + rev;
+                            powerfabDrawings = s2.Current + "\\to Send\\For Fabrication\\Drawings For Records - " + num + " " + phase;
                         }
                     }
                 }
@@ -107,7 +118,7 @@ namespace ReportRenamer
                         forFabZip = s.Current + "\\to Send\\For Fabrication\\" + num + "_" + DateTime.Now.ToString("MMM dd") + " " + phase + "#" + iss;
                         forFab = s.Current + "\\to Send\\For Fabrication\\" + num + "_" + DateTime.Now.ToString("MMM dd") + " " + phase + "#" + iss + "\\" + rev;
                     }
-                    else 
+                    else
                     {
                         forFabZip = s.Current + "\\to Send\\For Fabrication\\" + num + "_" + DateTime.Now.ToString("MMM dd") + " " + phase;
                         forFab = s.Current + "\\to Send\\For Fabrication\\" + num + "_" + DateTime.Now.ToString("MMM dd") + " " + phase + "\\" + rev;
@@ -118,8 +129,16 @@ namespace ReportRenamer
                 {
                     Directory.CreateDirectory(forFab);
                     Directory.CreateDirectory(forFab);
-                    Directory.CreateDirectory(forFab + "\\Fabrication");
-                    Directory.CreateDirectory(forFab + "\\Parts");
+                    if (fabtrol)
+                    {
+                        Directory.CreateDirectory(forFab + "\\Fabrication");
+                        Directory.CreateDirectory(forFab + "\\Parts");
+                    }
+                    if (!fabtrol)
+                    {
+                        Directory.CreateDirectory(powerfabDrawings + "\\Fabrication");
+                        Directory.CreateDirectory(powerfabDrawings + "\\Parts");
+                    }
                 }
                 if (!chbShared.Checked)
                 {
@@ -138,9 +157,24 @@ namespace ReportRenamer
 
                     Reports(s.Current);
 
-                    Drawings(s.Current);
+                    if (fabtrol)
+                    {
+                        Drawings(s.Current);
 
-                    SWFWSADrawings(s.Current);
+                        SWFWSADrawings(s.Current);
+                    }
+
+                    if (!fabtrol)
+                    {
+                        string PowerfabFolder = forFab + "\\Powerfab";
+                        if (!Directory.Exists(PowerfabFolder))
+                        {
+                            Directory.CreateDirectory(PowerfabFolder);
+                            Powerfab(s.Current);
+                            PowerfabDrawings(s.Current);
+                        }
+
+                    }
 
                     EDrawings(s.Current);
                 }
@@ -152,6 +186,121 @@ namespace ReportRenamer
                 MessageBox.Show("Unable to find job folder, please verify inputs and try again.");
                 txtJobNum.Focus();
                 txtJobNum.SelectAll();
+            }
+        }
+
+        private void Powerfab(string path)
+        {
+            try
+            {
+                path += "\\Tekla EPM";
+                if (chbSplit.Checked)
+                {
+                    string newNum = num;
+                    string oldNum = structNum;
+                    var filesPF = Directory.EnumerateFiles(path);
+                    foreach (string file in filesPF)
+                    {
+                        string oldFile = file;
+
+                        int startIndex = file.LastIndexOf("\\") + 1;
+                        string oldName = file.Substring(startIndex, file.Length - startIndex);
+
+                        oldName = oldName.Remove(0, 6);
+
+                        string newName = newNum + oldName;
+
+                        string newFile = oldFile.Remove(startIndex, file.Length - startIndex) + newName;
+
+                        File.Copy(oldFile, newFile);
+
+                        File.Delete(oldFile);
+
+                        string extractPath = newFile.Remove(newFile.Length - 4, 4);
+
+                        ZipFile.ExtractToDirectory(newFile, extractPath);
+                        File.Delete(newFile);
+
+                        var files2 = Directory.EnumerateFiles(extractPath);
+                        foreach (string file2 in files2)
+                        {
+                            if (file2.Contains(".xml"))
+                            {
+                                int startIndex2 = file2.LastIndexOf(oldNum);
+                                string tempName = file2.Substring(startIndex2, file2.Length - startIndex2);
+                                tempName = tempName.Replace(oldNum, newNum);
+
+                                string newXML = file2.Remove(startIndex2, tempName.Length) + tempName;
+
+                                File.Move(file2, newXML);
+
+                                XmlDocument doc = new XmlDocument();
+
+                                doc.Load(newXML);
+
+                                foreach (XmlNode node in doc.DocumentElement.ChildNodes)
+                                {
+                                    if (node.Name == "ProjectData")
+                                    {
+                                        foreach (XmlNode node2 in node.ChildNodes)
+                                        {
+                                            if (node2.Name == "ContractData")
+                                            {
+                                                foreach (XmlNode node3 in node2.ChildNodes)
+                                                {
+                                                    if (node3.Name == "ProjectId")
+                                                    {
+                                                        foreach (XmlNode node4 in node3.ChildNodes)
+                                                        {
+                                                            if (node4.Name == "ProjectNumber")
+                                                            {
+                                                                node4.InnerText = newNum;
+                                                                doc.Save(newXML);
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        ZipFile.CreateFromDirectory(extractPath, newFile);
+                        Directory.Delete(extractPath, true);
+                    }
+                }
+                var files = Directory.EnumerateFiles(path);
+                foreach (string file in files)
+                {
+                    string destination = forFab + "\\Powerfab\\" + num + "_" + phase + "-ISS" + iss + "_" + rev + ".zip";
+                    string extractPath = file.Remove(file.Length - 4, 4);
+                    ZipFile.ExtractToDirectory(file, extractPath);
+                    File.Delete(file);
+                    var files2 = Directory.EnumerateFiles(extractPath);
+                    foreach (string file2 in files2)
+                    {
+                        if (file2.Contains(".xml"))
+                        {
+                            int startIndex = file2.LastIndexOf(num);
+                            string tempName = file2.Substring(startIndex, file2.Length - startIndex);
+                            string newXML = file2.Remove(startIndex, tempName.Length);
+                            tempName = tempName.Remove(0, tempName.Length - 4);
+                            tempName = num + "_" + phase + "-ISS" + iss + "_" + rev + tempName;
+                            newXML = newXML + tempName;
+                            File.Move(file2, newXML);
+                        }
+                        ZipFile.CreateFromDirectory(extractPath, file);
+                        Directory.Delete(extractPath, true);
+                    }
+                    File.Move(file, destination);
+                    File.Delete(file);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, ex.GetType().ToString());
             }
         }
 
@@ -169,7 +318,7 @@ namespace ReportRenamer
                     ZipFile.CreateFromDirectory(startPath, zipPath);
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, ex.GetType().ToString());
             }
@@ -186,7 +335,7 @@ namespace ReportRenamer
                 path += "\\Plotfiles";
                 string search = num + "_" + phase + "*" + ".pdf";
                 var files = Directory.EnumerateFiles(path, search);
-                foreach(string file in files)
+                foreach (string file in files)
                 {
                     if (file.Contains(phase))
                     {
@@ -197,7 +346,7 @@ namespace ReportRenamer
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message,ex.GetType().ToString());
+                MessageBox.Show(ex.Message, ex.GetType().ToString());
             }
         }
 
@@ -248,7 +397,42 @@ namespace ReportRenamer
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message,ex.GetType().ToString());
+                MessageBox.Show(ex.Message, ex.GetType().ToString());
+            }
+        }
+
+        private void PowerfabDrawings(string path)
+        {
+            try
+            {
+                path += "\\Plotfiles";
+                string search = "";
+                if (iss != "")
+                {
+                    search = "*" + phase + "-ISS" + iss + ".pdf";
+                }
+                else
+                {
+                    search = "*" + phase + ".pdf";
+                }
+                var files = Directory.EnumerateFiles(path, search);
+                foreach (string file in files)
+                {
+                    string destinationPart = powerfabDrawings + "\\Parts\\" + Path.GetFileName(file);
+                    string destinationFabrication = powerfabDrawings + "\\Fabrication\\" + Path.GetFileName(file);
+                    if (file.Contains("LM"))
+                    {
+                        File.Move(file, destinationPart);
+                    }
+                    else
+                    {
+                        File.Move(file, destinationFabrication);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, ex.GetType().ToString());
             }
         }
 
@@ -262,7 +446,7 @@ namespace ReportRenamer
             {
                 path += "\\Plotfiles";
                 string search = "";
-                if(iss != "")
+                if (iss != "")
                 {
                     search = "*" + phase + "-ISS" + iss + ".pdf";
                 }
@@ -306,8 +490,8 @@ namespace ReportRenamer
                 {
                     int startIndex = file.LastIndexOf("\\") + 1;
                     string f = file.Substring(startIndex, file.Length - startIndex);
-                    
-                    if(iss != "")
+
+                    if (iss != "")
                     {
                         switch (f)
                         {
@@ -402,12 +586,12 @@ namespace ReportRenamer
                                 File.Move(file, forFab + "\\" + num + "_BOI_" + phase + "_" + rev + ".xsr");
                                 break;
                         }
-                    } 
+                    }
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                MessageBox.Show(ex.Message,ex.GetType().ToString());
+                MessageBox.Show(ex.Message, ex.GetType().ToString());
             }
         }
 
@@ -432,17 +616,17 @@ namespace ReportRenamer
                         Directory.CreateDirectory(forFab + "\\CNCData");
                         string[] files = Directory.GetFiles(ncPath);
 
-                        foreach(string s in files)
+                        foreach (string s in files)
                         {
                             string fileName = Path.GetFileName(s);
                             string destFile = Path.Combine(forFab + "\\CNCData", fileName);
-                            File.Copy(s, destFile,true);
+                            File.Copy(s, destFile, true);
                             File.Delete(s);
                         }
 
                         string[] dirs = Directory.GetDirectories(ncPath);
 
-                        foreach(string s in dirs)
+                        foreach (string s in dirs)
                         {
                             string dirName = Path.GetFileName(s);
                             string ncPath2 = ncPath + "\\" + dirName;
@@ -458,14 +642,14 @@ namespace ReportRenamer
                                 File.Delete(s2);
                             }
                             Directory.Delete(ncPath2);
-                            
+
                         }
 
                         Directory.Delete(ncPath);
                     }
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
             }
@@ -479,6 +663,7 @@ namespace ReportRenamer
         {
             try
             {
+                #region Reports
                 path += "\\Reports";
                 var files = Directory.EnumerateFiles(path, "*.xsr");
                 foreach (string file in files)
@@ -490,6 +675,7 @@ namespace ReportRenamer
                     fileText = fileText.Replace(structNum, num);
                     File.WriteAllText(file, fileText);
                 }
+                #endregion
             }
             catch (Exception ex)
             {

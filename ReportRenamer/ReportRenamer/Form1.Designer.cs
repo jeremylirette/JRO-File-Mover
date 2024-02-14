@@ -45,6 +45,10 @@
             this.lblStruct = new System.Windows.Forms.Label();
             this.txtStruct = new System.Windows.Forms.TextBox();
             this.chbSplit = new System.Windows.Forms.CheckBox();
+            this.rdoPowerfab = new System.Windows.Forms.RadioButton();
+            this.rdoFabtrol = new System.Windows.Forms.RadioButton();
+            this.gbType = new System.Windows.Forms.GroupBox();
+            this.gbType.SuspendLayout();
             this.SuspendLayout();
             // 
             // btnRename
@@ -96,10 +100,12 @@
             // chbShared
             // 
             this.chbShared.AutoSize = true;
+            this.chbShared.Checked = true;
+            this.chbShared.CheckState = System.Windows.Forms.CheckState.Checked;
             this.chbShared.Location = new System.Drawing.Point(395, 121);
             this.chbShared.Name = "chbShared";
             this.chbShared.Size = new System.Drawing.Size(98, 17);
-            this.chbShared.TabIndex = 3;
+            this.chbShared.TabIndex = 8;
             this.chbShared.Text = "Shared Model?";
             this.chbShared.UseVisualStyleBackColor = true;
             // 
@@ -169,7 +175,7 @@
             this.txtStruct.Location = new System.Drawing.Point(123, 90);
             this.txtStruct.Name = "txtStruct";
             this.txtStruct.Size = new System.Drawing.Size(266, 20);
-            this.txtStruct.TabIndex = 12;
+            this.txtStruct.TabIndex = 3;
             // 
             // chbSplit
             // 
@@ -177,16 +183,49 @@
             this.chbSplit.Location = new System.Drawing.Point(395, 144);
             this.chbSplit.Name = "chbSplit";
             this.chbSplit.Size = new System.Drawing.Size(97, 17);
-            this.chbSplit.TabIndex = 15;
+            this.chbSplit.TabIndex = 9;
             this.chbSplit.Text = "Split Numbers?";
             this.chbSplit.UseVisualStyleBackColor = true;
             this.chbSplit.CheckedChanged += new System.EventHandler(this.chbSplit_CheckedChanged);
+            // 
+            // rdoPowerfab
+            // 
+            this.rdoPowerfab.AutoSize = true;
+            this.rdoPowerfab.Location = new System.Drawing.Point(6, 9);
+            this.rdoPowerfab.Name = "rdoPowerfab";
+            this.rdoPowerfab.Size = new System.Drawing.Size(70, 17);
+            this.rdoPowerfab.TabIndex = 0;
+            this.rdoPowerfab.TabStop = true;
+            this.rdoPowerfab.Text = "Powerfab";
+            this.rdoPowerfab.UseVisualStyleBackColor = true;
+            // 
+            // rdoFabtrol
+            // 
+            this.rdoFabtrol.AutoSize = true;
+            this.rdoFabtrol.Location = new System.Drawing.Point(5, 34);
+            this.rdoFabtrol.Name = "rdoFabtrol";
+            this.rdoFabtrol.Size = new System.Drawing.Size(57, 17);
+            this.rdoFabtrol.TabIndex = 1;
+            this.rdoFabtrol.TabStop = true;
+            this.rdoFabtrol.Text = "Fabtrol";
+            this.rdoFabtrol.UseVisualStyleBackColor = true;
+            // 
+            // gbType
+            // 
+            this.gbType.Controls.Add(this.rdoPowerfab);
+            this.gbType.Controls.Add(this.rdoFabtrol);
+            this.gbType.Location = new System.Drawing.Point(12, 109);
+            this.gbType.Name = "gbType";
+            this.gbType.Size = new System.Drawing.Size(96, 52);
+            this.gbType.TabIndex = 10;
+            this.gbType.TabStop = false;
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(527, 173);
+            this.Controls.Add(this.gbType);
             this.Controls.Add(this.chbSplit);
             this.Controls.Add(this.lblStruct2);
             this.Controls.Add(this.lblStruct);
@@ -206,6 +245,8 @@
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "3";
             this.Load += new System.EventHandler(this.Form1_Load);
+            this.gbType.ResumeLayout(false);
+            this.gbType.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -230,6 +271,9 @@
         private System.Windows.Forms.Label lblStruct;
         private System.Windows.Forms.TextBox txtStruct;
         private System.Windows.Forms.CheckBox chbSplit;
+        private System.Windows.Forms.RadioButton rdoPowerfab;
+        private System.Windows.Forms.RadioButton rdoFabtrol;
+        private System.Windows.Forms.GroupBox gbType;
     }
 }
 
