@@ -175,7 +175,7 @@ namespace ReportRenamer
                         }
 
                     }
-
+                    DXFFiles(s.Current);
                     EDrawings(s.Current);
                 }
                 Zip();
@@ -193,7 +193,15 @@ namespace ReportRenamer
         {
             try
             {
-                path += "\\Tekla EPM";
+                if(Directory.Exists(path + "\\Tekla EPM"))
+                {
+                    path += "\\Tekla EPM";
+                }
+                else
+                {
+                    path += "\\Tekla PowerFab";
+                }
+                
                 if (chbSplit.Checked)
                 {
                     string newNum = num;
@@ -289,9 +297,10 @@ namespace ReportRenamer
                             tempName = num + "_" + phase + "-ISS" + iss + "_" + rev + tempName;
                             newXML = newXML + tempName;
                             File.Move(file2, newXML);
+                            ZipFile.CreateFromDirectory(extractPath, file);
+                            Directory.Delete(extractPath, true);
                         }
-                        ZipFile.CreateFromDirectory(extractPath, file);
-                        Directory.Delete(extractPath, true);
+                        
                     }
                     File.Move(file, destination);
                     File.Delete(file);
@@ -431,6 +440,25 @@ namespace ReportRenamer
                 }
             }
             catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, ex.GetType().ToString());
+            }
+        }
+
+        private void DXFFiles(string path)
+        {
+            try
+            {
+                path += "\\plotfiles";
+                string search = "*.dxf";
+                var files = Directory.EnumerateFiles(path, search);
+                foreach (string file in files)
+                {
+                    string destination = forFab + "\\DXF Files" + Path.GetFileName(file);
+                    File.Move(file, destination);
+                }
+            }
+            catch(Exception ex)
             {
                 MessageBox.Show(ex.Message, ex.GetType().ToString());
             }
