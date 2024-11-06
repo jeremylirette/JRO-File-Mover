@@ -176,6 +176,7 @@ namespace ReportRenamer
 
                     }
                     DXFFiles(s.Current);
+                    //STPFiles(s.Current);
                     EDrawings(s.Current);
                 }
                 Zip();
@@ -449,12 +450,13 @@ namespace ReportRenamer
         {
             try
             {
+                Directory.CreateDirectory(forFab + "\\DXF Files");
                 path += "\\plotfiles";
                 string search = "*.dxf";
                 var files = Directory.EnumerateFiles(path, search);
                 foreach (string file in files)
                 {
-                    string destination = forFab + "\\DXF Files" + Path.GetFileName(file);
+                    string destination = forFab + "\\DXF Files\\" + Path.GetFileName(file);
                     File.Move(file, destination);
                 }
             }
@@ -463,6 +465,32 @@ namespace ReportRenamer
                 MessageBox.Show(ex.Message, ex.GetType().ToString());
             }
         }
+
+        //private void STPFiles(string path)
+        //{
+        //    try
+        //    {
+        //        string STPpath =  path + "\\STP_files";
+        //        Directory.CreateDirectory(forFab + "\\STP Files");
+        //        if (Directory.Exists(STPpath))
+        //        {
+        //            string[] files = Directory.GetFiles(STPpath);
+
+        //            foreach (string s in files)
+        //            {
+        //                string fileName = Path.GetFileName(s);
+        //                string destFile = Path.Combine(forFab + "\\STP Files", fileName);
+        //                File.Copy(s, destFile, true);
+        //                File.Delete(s);
+        //            }
+        //        }
+
+        //    }
+        //    catch(Exception ex)
+        //    {
+        //        MessageBox.Show(ex.Message, ex.GetType().ToString());
+        //    }
+        //}
 
         /// <summary>
         /// Move and sort drawings. (Parts and Fabrication)
