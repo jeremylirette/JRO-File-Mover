@@ -221,9 +221,9 @@ namespace ReportRenamer
 
                         string newFile = oldFile.Remove(startIndex, file.Length - startIndex) + newName;
 
-                        File.Copy(oldFile, newFile);
+                        //File.Copy(oldFile, newFile);
 
-                        File.Delete(oldFile);
+                        //File.Delete(oldFile);
 
                         string extractPath = newFile.Remove(newFile.Length - 4, 4);
 
@@ -235,17 +235,17 @@ namespace ReportRenamer
                         {
                             if (file2.Contains(".xml"))
                             {
-                                int startIndex2 = file2.LastIndexOf(oldNum);
-                                string tempName = file2.Substring(startIndex2, file2.Length - startIndex2);
-                                tempName = tempName.Replace(oldNum, newNum);
+                                //int startIndex2 = file2.LastIndexOf(oldNum);
+                                //string tempName = file2.Substring(startIndex2, file2.Length - startIndex2);
+                                //tempName = tempName.Replace(oldNum, newNum);
 
-                                string newXML = file2.Remove(startIndex2, tempName.Length) + tempName;
+                                //string newXML = file2.Remove(startIndex2, tempName.Length) + tempName;
 
-                                File.Move(file2, newXML);
+                                //File.Move(file2, newXML);
 
                                 XmlDocument doc = new XmlDocument();
 
-                                doc.Load(newXML);
+                                doc.Load(file2);
 
                                 foreach (XmlNode node in doc.DocumentElement.ChildNodes)
                                 {
@@ -264,7 +264,7 @@ namespace ReportRenamer
                                                             if (node4.Name == "ProjectNumber")
                                                             {
                                                                 node4.InnerText = newNum;
-                                                                doc.Save(newXML);
+                                                                doc.Save(file2);
                                                             }
                                                         }
                                                     }
@@ -583,6 +583,9 @@ namespace ReportRenamer
                                 break;
                             case "_Std_Part_List.xsr":
                                 File.Move(file, forFab + "\\" + num + "_STD_" + phase + "_ISS" + iss + "_" + rev + ".xsr");
+                                break;
+                            case "_Std_Part_List_Field.xsr":
+                                File.Move(file, forFab + "\\" + num + "_STDF_" + phase + "_ISS" + iss + "_" + rev + ".xsr");
                                 break;
                             case "_Stud List.xsr":
                                 File.Move(file, forFab + "\\" + num + "_SL_" + phase + "_ISS" + iss + "_" + rev + ".xsr");
