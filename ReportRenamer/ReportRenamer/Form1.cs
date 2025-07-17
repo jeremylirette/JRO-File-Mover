@@ -177,6 +177,7 @@ namespace ReportRenamer
                     }
                     DXFFiles(s.Current);
                     //STPFiles(s.Current);
+                    TubeNCFile(s.Current);
                     EDrawings(s.Current);
                 }
                 Zip();
@@ -190,6 +191,10 @@ namespace ReportRenamer
             }
         }
 
+        /// <summary>
+        /// Move and rename Powerfab
+        /// </summary>
+        /// <param name="path"></param>
         private void Powerfab(string path)
         {
             try
@@ -443,6 +448,26 @@ namespace ReportRenamer
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, ex.GetType().ToString());
+            }
+        }
+
+        private void TubeNCFile(string path)
+        {
+            try
+            {
+                var files = Directory.EnumerateFiles(path);
+                foreach(string file in files)
+                {
+                    if (file.Contains("TubeNC.xml"))
+                    {
+                        string newXML = forFab + "\\" + num + "_" + phase + "-ISS" + iss + "_" + rev + "_" + "TubeNC.xml";
+                        File.Move(file, newXML);
+                    }
+                }
+            }
+            catch(Exception ex)
+            {
+                MessageBox.Show(ex.Message);
             }
         }
 
