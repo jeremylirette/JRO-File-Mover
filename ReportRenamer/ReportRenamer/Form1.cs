@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
+using System.Linq;
 using System.Windows.Forms;
 using System.Xml;
 
@@ -79,7 +80,7 @@ namespace ReportRenamer
                 iss = "";
             }
 
-            string path = "\\\\JRO-SERVER\\Jobs\\";
+            string path = "\\\\JRO-FS\\Jobs\\";
             if (chbShared.Checked)
             {
                 path = "C:\\TeklaStructuresModels";
@@ -91,7 +92,7 @@ namespace ReportRenamer
             {
                 if (chbShared.Checked)
                 {
-                    IEnumerable<string> l = Directory.GetDirectories("\\\\JRO-SERVER\\Jobs\\", destNum + "*", SearchOption.TopDirectoryOnly);
+                    IEnumerable<string> l = Directory.GetDirectories("\\\\JRO-FS\\Jobs\\", destNum + "*", SearchOption.TopDirectoryOnly);
                     IEnumerator<string> s2 = l.GetEnumerator();
                     if (s2.MoveNext())
                     {
@@ -176,7 +177,7 @@ namespace ReportRenamer
 
                     }
                     DXFFiles(s.Current);
-                    //STPFiles(s.Current);
+                    STPFiles(s.Current);
                     TubeNCFile(s.Current);
                     EDrawings(s.Current);
                 }
@@ -374,8 +375,7 @@ namespace ReportRenamer
             try
             {
                 path += "\\Plotfiles";
-                string search = num + "_" + "J" + "*" + "30.pdf";
-                var files = Directory.EnumerateFiles(path, search);
+                var files = Directory.EnumerateFiles(path);
                 foreach (string file in files)
                 {
 
@@ -404,7 +404,7 @@ namespace ReportRenamer
                     {
                         File.Move(file, destinationSW + Path.GetFileName(file));
                     }
-                    if (file.Contains("JSA"))
+                    if (file.Contains("JSA") || file.Contains("SA"))
                     {
                         File.Move(file, destinationSA + Path.GetFileName(file));
                     }
@@ -484,6 +484,11 @@ namespace ReportRenamer
                     string destination = forFab + "\\DXF Files\\" + Path.GetFileName(file);
                     File.Move(file, destination);
                 }
+
+                if(IsDirectoryEmpty(forFab + "\\DXF Files"))
+                {
+                    Directory.Delete(forFab + "\\DXF Files");
+                }
             }
             catch(Exception ex)
             {
@@ -491,31 +496,34 @@ namespace ReportRenamer
             }
         }
 
-        //private void STPFiles(string path)
-        //{
-        //    try
-        //    {
-        //        string STPpath =  path + "\\STP_files";
-        //        Directory.CreateDirectory(forFab + "\\STP Files");
-        //        if (Directory.Exists(STPpath))
-        //        {
-        //            string[] files = Directory.GetFiles(STPpath);
+        private void STPFiles(string path)
+        {
+            try
+            {
+                string STPpath = path + "\\STP_files";
+                Directory.CreateDirectory(forFab + "\\STP Files");
+                if (Directory.Exists(STPpath))
+                {
+                    string[] files = Directory.GetFiles(STPpath);
 
-        //            foreach (string s in files)
-        //            {
-        //                string fileName = Path.GetFileName(s);
-        //                string destFile = Path.Combine(forFab + "\\STP Files", fileName);
-        //                File.Copy(s, destFile, true);
-        //                File.Delete(s);
-        //            }
-        //        }
-
-        //    }
-        //    catch(Exception ex)
-        //    {
-        //        MessageBox.Show(ex.Message, ex.GetType().ToString());
-        //    }
-        //}
+                    foreach (string s in files)
+                    {
+                        string fileName = Path.GetFileName(s);
+                        string destFile = Path.Combine(forFab + "\\STP Files", fileName);
+                        File.Copy(s, destFile, true);
+                        File.Delete(s);
+                    }
+                }
+                if (IsDirectoryEmpty(forFab + "\\STP Files"))
+                {
+                    Directory.Delete(forFab + "\\STP Files");
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, ex.GetType().ToString());
+            }
+        }
 
         /// <summary>
         /// Move and sort drawings. (Parts and Fabrication)
@@ -781,6 +789,11 @@ namespace ReportRenamer
                 lblStruct2.Hide();
                 txtStruct.Hide();
             }
+        }
+
+        private bool IsDirectoryEmpty(string path)
+        {
+            return !Directory.EnumerateFileSystemEntries(path).Any();
         }
     }
 }
