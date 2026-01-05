@@ -80,7 +80,7 @@ namespace ReportRenamer
                 iss = "";
             }
 
-            string path = "\\\\JRO-FS\\Jobs\\";
+            string path = "\\\\JRO-FS.RKO.LOCAL\\Jobs\\";
             if (chbShared.Checked)
             {
                 path = "C:\\TeklaStructuresModels";
@@ -92,7 +92,7 @@ namespace ReportRenamer
             {
                 if (chbShared.Checked)
                 {
-                    IEnumerable<string> l = Directory.GetDirectories("\\\\JRO-FS\\Jobs\\", destNum + "*", SearchOption.TopDirectoryOnly);
+                    IEnumerable<string> l = Directory.GetDirectories("\\\\JRO-FS.RKO.LOCAL\\Jobs\\", destNum + "*", SearchOption.TopDirectoryOnly);
                     IEnumerator<string> s2 = l.GetEnumerator();
                     if (s2.MoveNext())
                     {
@@ -173,6 +173,8 @@ namespace ReportRenamer
                             Directory.CreateDirectory(PowerfabFolder);
                             Powerfab(s.Current);
                             PowerfabDrawings(s.Current);
+
+                            SWFWSADrawings(s.Current);
                         }
 
                     }
